@@ -26,12 +26,10 @@ const createOrder = async (req, res) => {
     // Validate shipping address
     if (
       !shippingAddress ||
-      !shippingAddress.street ||
+      !shippingAddress.address ||
       !shippingAddress.city ||
-      !shippingAddress.state ||
-      !shippingAddress.zipCode ||
-      !shippingAddress.country ||
-      !shippingAddress.mobile
+      !shippingAddress.postalCode ||
+      !shippingAddress.country
     ) {
       return res.status(400).json({ error: "Shipping address is incomplete" });
     }
