@@ -1,0 +1,7 @@
+node_modules
+.env
+
+
+# You dont want to update to Github
+
+# .env >>> we dont wanna expose our credentials
