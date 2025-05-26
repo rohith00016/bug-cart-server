@@ -6,7 +6,11 @@ const getCart = async (req, res) => {
     const cart = await Cart.findOne({ userId: req.user._id }).populate(
       "items.productId"
     );
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    if (!cart) {
+      return res.status(200).json({ userId: req.user._id, items: [] }); // Safe fallback
+    }
+
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ error: error.message });
