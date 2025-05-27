@@ -17,10 +17,9 @@ const getAllProducts = async (req, res) => {
     }
 
     if (subCategory) {
-      query.subCategory = type;
+      query.subCategory = subCategory;
     }
 
-    // Sorting
     let sortOption = {};
     if (sort === "lowToHigh") {
       sortOption.price = 1;
@@ -28,10 +27,8 @@ const getAllProducts = async (req, res) => {
       sortOption.price = -1;
     }
 
-    // Count total with filters
     const total = await Product.countDocuments(query);
 
-    // Fetch paginated and sorted products
     const products = await Product.find(query)
       .sort(sortOption)
       .skip(skip)
@@ -66,7 +63,84 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getLatestProducts = async (req, res) => {
+  try {
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const total = await Product.countDocuments({});
+    const products = await Product.find({})
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      total,
+      page: Number(page),
+      limit,
+      totalPages: Math.ceil(total / limit),
+      products,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch latest products", error });
+  }
+};
+
+const getBestSellers = async (req, res) => {
+  try {
+    const { page = 1 } = req.query;
+    const limit = 5;
+    const skip = (page - 1) * limit;
+
+    const total = await Product.countDocuments({ bestseller: true });
+    const products = await Product.find({ bestseller: true })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      total,
+      page: Number(page),
+      limit,
+      totalPages: Math.ceil(total / limit),
+      products,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch bestsellers", error });
+  }
+};
+const getRelatedProducts = async (req, res) => {
+  try {
+    const { category, subCategory } = req.query;
+
+    if (!category || !subCategory) {
+      return res
+        .status(400)
+        .json({ message: "Category and subCategory are required" });
+    }
+
+    const products = await Product.find({
+      category,
+      subCategory,
+    }).limit(5);
+
+    res.status(200).json({
+      products,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch related products", error });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
+  getLatestProducts,
+  getBestSellers,
+  getRelatedProducts,
 };

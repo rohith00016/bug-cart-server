@@ -117,8 +117,7 @@ const getUser = async (req, res) => {
     if (req.user) {
       res.send({
         userDetail: {
-          firstName: req.user.firstName,
-          lastName: req.user.lastName,
+          name: req.user.name,
           email: req.user.email,
           mobile: req.user.mobile,
           shippingAddress: req.user.shippingAddress,
