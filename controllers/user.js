@@ -16,8 +16,8 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
     const userData = new User({
-      name,
-      email,
+      name: req.body.name,
+      email: req.body.email,
       password: hashedPassword,
     });
 
