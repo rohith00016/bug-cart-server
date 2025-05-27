@@ -26,8 +26,7 @@ const signup = async (req, res) => {
     res.status(201).json({
       message: "Signup successful. Please log in.",
       user: {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        name: userData.name,
         email: userData.email,
         mobile: userData.mobile,
         shippingAddress: userData.shippingAddress,
