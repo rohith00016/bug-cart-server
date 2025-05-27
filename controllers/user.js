@@ -114,12 +114,13 @@ const resetPassword = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     if (req.user) {
+      const user = await User.findById(req.user._id);
       res.send({
-        userDetail: {
-          name: req.user.name,
-          email: req.user.email,
-          mobile: req.user.mobile,
-          shippingAddress: req.user.shippingAddress,
+        user: {
+          name: user.name,
+          email: user.email,
+          mobile: user.mobile,
+          shippingAddress: user.shippingAddress,
         },
       });
     } else {
