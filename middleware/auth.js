@@ -2,9 +2,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/user");
 
 const auth = async (req, res, next) => {
-  console.log("Auth middleware is called");
-  console.log("Authorization Header:", req.header("Authorization"));
-
   try {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
@@ -27,7 +24,6 @@ const auth = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
     }
-    console.log(user);
     req.user = user;
     next();
   } catch (e) {

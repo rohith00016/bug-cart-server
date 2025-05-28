@@ -8,7 +8,6 @@ const signup = async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
 
     if (user) {
-      console.log("User is found", req.body.email);
       return res.status(400).json({ message: "User Already Exists" });
     }
 

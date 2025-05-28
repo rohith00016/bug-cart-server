@@ -34,13 +34,11 @@ const addToWishlist = async (req, res) => {
       ) {
         wishlist.items.push({ productId });
       } else {
-        console.log("Item already in wishlist:", productId);
       }
     }
 
     await wishlist.save();
     await wishlist.populate("items.productId");
-    console.log("Wishlist after add:", wishlist);
     res.status(200).json(wishlist);
   } catch (error) {
     console.error("Add to wishlist error:", error);
@@ -62,7 +60,6 @@ const removeFromWishlist = async (req, res) => {
     );
     await wishlist.save();
     await wishlist.populate("items.productId");
-    console.log("Wishlist after remove:", wishlist);
     res.status(200).json(wishlist);
   } catch (error) {
     console.error("Remove from wishlist error:", error);
