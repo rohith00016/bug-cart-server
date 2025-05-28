@@ -6,13 +6,11 @@ const createOrder = async (req, res) => {
     const { shippingAddress } = req.body;
     const userId = req.user._id;
 
-    // Find user's cart
     const cart = await Cart.findOne({ userId }).populate("items.productId");
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ error: "Cart is empty" });
     }
 
-    // Prepare order items and calculate total
     const items = cart.items.map((item) => ({
       productId: item.productId._id,
       quantity: item.quantity,
@@ -23,18 +21,17 @@ const createOrder = async (req, res) => {
       0
     );
 
-    // Validate shipping address
     if (
       !shippingAddress ||
       !shippingAddress.address ||
       !shippingAddress.city ||
+      !shippingAddress.state ||
       !shippingAddress.postalCode ||
       !shippingAddress.country
     ) {
       return res.status(400).json({ error: "Shipping address is incomplete" });
     }
 
-    // Create order
     const order = new Order({
       userId,
       items,
@@ -44,7 +41,6 @@ const createOrder = async (req, res) => {
 
     await order.save();
 
-    // Clear the cart
     cart.items = [];
     await cart.save();
 
@@ -56,10 +52,9 @@ const createOrder = async (req, res) => {
 
 const getUserOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.user._id }).populate(
-      "items.productId",
-      "name price"
-    );
+    const orders = await Order.find({ userId: req.user._id })
+      .sort({ createdAt: -1 })
+      .populate("items.productId", "name price image");
     res.json(orders);
   } catch (error) {
     res.status(500).json({ error: error.message });

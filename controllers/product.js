@@ -13,11 +13,11 @@ const getAllProducts = async (req, res) => {
     }
 
     if (category) {
-      query.category = category;
+      query.category = { $in: category.split(",") };
     }
 
     if (subCategory) {
-      query.subCategory = subCategory;
+      query.subCategory = { $in: subCategory.split(",") };
     }
 
     let sortOption = {};
@@ -25,6 +25,8 @@ const getAllProducts = async (req, res) => {
       sortOption.price = 1;
     } else if (sort === "highToLow") {
       sortOption.price = -1;
+    } else if (sort === "relevant") {
+      sortOption = { bestseller: -1, date: -1 };
     }
 
     const total = await Product.countDocuments(query);
@@ -66,7 +68,7 @@ const getProductById = async (req, res) => {
 const getLatestProducts = async (req, res) => {
   try {
     const { page = 1 } = req.query;
-    const limit = 10;
+    const limit = 12;
     const skip = (page - 1) * limit;
 
     const total = await Product.countDocuments({});
@@ -91,7 +93,7 @@ const getLatestProducts = async (req, res) => {
 const getBestSellers = async (req, res) => {
   try {
     const { page = 1 } = req.query;
-    const limit = 5;
+    const limit = 12;
     const skip = (page - 1) * limit;
 
     const total = await Product.countDocuments({ bestseller: true });
@@ -111,6 +113,7 @@ const getBestSellers = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch bestsellers", error });
   }
 };
+
 const getRelatedProducts = async (req, res) => {
   try {
     const { category, subCategory } = req.query;

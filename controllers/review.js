@@ -49,11 +49,12 @@ exports.getProductReviews = async (req, res) => {
 
   const avgRating =
     reviews.length > 0
-      ? (
-          reviews.reduce((sum, review) => sum + review.rating, 0) /
-          reviews.length
-        ).toFixed(1)
-      : null;
+      ? Math.round(
+          (reviews.reduce((sum, review) => sum + review.rating, 0) /
+            reviews.length) *
+            10
+        ) / 10
+      : 0;
 
   res.status(200).json({
     reviews,

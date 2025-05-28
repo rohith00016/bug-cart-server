@@ -139,7 +139,7 @@ const updateProfile = async (req, res) => {
     }
 
     const updates = req.body;
-    const allowedUpdates = ["email", "mobile", "shippingAddress"];
+    const allowedUpdates = ["name", "email", "mobile", "shippingAddress"];
     const isValidUpdate = Object.keys(updates).every((update) =>
       allowedUpdates.includes(update)
     );
@@ -148,8 +148,7 @@ const updateProfile = async (req, res) => {
       return res.status(400).send({ message: "Invalid update fields" });
     }
 
-    if (updates.firstName) user.firstName = updates.firstName;
-    if (updates.lastName) user.lastName = updates.lastName;
+    if (updates.name) user.name = updates.name;
     if (updates.email) user.email = updates.email;
     if (updates.mobile) user.mobile = updates.mobile;
     if (updates.shippingAddress) {
