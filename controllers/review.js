@@ -1,7 +1,6 @@
 const Review = require("../model/review");
 const Product = require("../model/product");
 
-// Create a new review
 exports.createReview = async (req, res) => {
   const { productId, rating, comment } = req.body;
   const userId = req.user._id;
@@ -11,7 +10,6 @@ exports.createReview = async (req, res) => {
       .json({ message: "Product ID and valid rating (1-5) are required" });
   }
 
-  // Check if product exists
   const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
@@ -37,11 +35,9 @@ exports.createReview = async (req, res) => {
   }
 };
 
-// Get all reviews for a product
 exports.getProductReviews = async (req, res) => {
   const { productId } = req.params;
 
-  // Check if product exists
   const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
@@ -51,38 +47,19 @@ exports.getProductReviews = async (req, res) => {
     .populate("userId", "name email")
     .sort({ createdAt: -1 });
 
-  res.status(200).json({ reviews, count: reviews.length });
-};
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, review) => sum + review.rating, 0) /
+          reviews.length
+        ).toFixed(1)
+      : null;
 
-// Update a review
-exports.updateReview = async (req, res) => {
-  const { reviewId } = req.params;
-  const { rating, comment } = req.body;
-  const userId = req.user._id;
-
-  // Validate input
-  if (rating && (rating < 1 || rating > 5)) {
-    return res.status(400).json({ message: "Rating must be between 1 and 5" });
-  }
-
-  const review = await Review.findById(reviewId);
-  if (!review) {
-    return res.status(404).json({ message: "Review not found" });
-  }
-
-  // Check if user owns the review
-  if (review.userId.toString() !== userId.toString()) {
-    return res
-      .status(403)
-      .json({ message: "You can only update your own reviews" });
-  }
-
-  // Update fields
-  if (rating) review.rating = rating;
-  if (comment !== undefined) review.comment = comment;
-
-  await review.save();
-  res.status(200).json({ message: "Review updated successfully", review });
+  res.status(200).json({
+    reviews,
+    count: reviews.length,
+    averageRating: avgRating,
+  });
 };
 
 exports.getUserReviews = async (req, res) => {
